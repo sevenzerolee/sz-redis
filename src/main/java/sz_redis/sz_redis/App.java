@@ -1,6 +1,8 @@
 package sz_redis.sz_redis;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -42,6 +44,13 @@ public class App {
 			System.out.println(jedisCluster.set(key, value));
 		}
 		
+		Set<String> set = keys2(jedisCluster, "a*");
+		for (String key : set) {
+			System.out.println(key + ", " + jedisCluster.get(key));
+		}
+		
+		System.out.println(jedisCluster.get("a2"));
+		
 //		ShardedJedisPool pool = (ShardedJedisPool) context.getBean("shardedJedisPool");
 //		
 //		for (int i=0; i<20; i++) {
@@ -53,6 +62,39 @@ public class App {
 //			
 //		}
 		
+	}
+	
+	/**
+	 * 集群中实现模糊查询
+	 * @param jedisCluster
+	 * @param pattern
+	 * @return
+	 */
+	public static Set<String> keys2(JedisCluster jedisCluster, String pattern) {
+		log.info("Start getting keys...");
+		Set<String> keys = new HashSet<String>();
+		Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
+		for (String k : clusterNodes.keySet()) {
+			log.info("Getting keys from: {}" + k);
+			JedisPool jp = clusterNodes.get(k);
+			Jedis connection = jp.getResource();
+			try {
+				keys.addAll(connection.keys(pattern));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			} 
+			finally {
+				log.info("Connection closed.");
+				// 用完一定要close这个链接！！！
+				if (null != connection) {
+					connection.close();
+				}
+			}
+		}
+		log.info("Keys gotten!");
+		
+		return keys;
 	}
 	
 	/**
@@ -73,11 +115,14 @@ public class App {
 				keys.addAll(connection.keys(pattern));
 			}
 			catch (Exception e) {
-				log.info("Getting keys error: {}" + e);
+				e.printStackTrace();
 			} 
 			finally {
 				log.info("Connection closed.");
-				connection.close();// 用完一定要close这个链接！！！
+				// 用完一定要close这个链接！！！
+				if (null != connection) {
+					connection.close();
+				}
 			}
 		}
 		log.info("Keys gotten!");
