@@ -23,7 +23,7 @@ public class App {
 	static final Logger log = Logger.getLogger(App.class.getSimpleName());
 	
 	public static void main(String[] args) {
-		System.out.println("Hello World!");
+		log.info("Hello World!");
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 //		ApplicationContext context = new ClassPathXmlApplicationContext("spring_new.xml");
@@ -35,21 +35,21 @@ public class App {
 		
 		JedisCluster jedisCluster = (JedisCluster) context.getBean("jedisCluster");
 		
-		System.out.println(jedisCluster.get("a"));
+		log.info(jedisCluster.get("a"));
 		
 		for (int i=1; i<20; i++) {
 			String key = "a" + i;
 			String value = "aaa#" + UUID.randomUUID().toString();
 			
-			System.out.println(jedisCluster.set(key, value));
+			log.info(jedisCluster.set(key, value));
 		}
 		
-		Set<String> set = keys2(jedisCluster, "a*");
-		for (String key : set) {
-			System.out.println(key + ", " + jedisCluster.get(key));
-		}
+//		Set<String> set = keys2(jedisCluster, "a*");
+//		for (String key : set) {
+//			log.info(key + ", " + jedisCluster.get(key));
+//		}
 		
-		System.out.println(jedisCluster.get("a2"));
+		log.info(jedisCluster.get("a2"));
 		
 //		ShardedJedisPool pool = (ShardedJedisPool) context.getBean("shardedJedisPool");
 //		
