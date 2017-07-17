@@ -35,13 +35,31 @@ public class App {
 		
 		JedisCluster jedisCluster = (JedisCluster) context.getBean("jedisCluster");
 		
-		log.info(jedisCluster.get("a"));
+//		log.info("## " + jedisCluster.del("a"));
+//		log.info(jedisCluster.get("a"));
+		
+		
+		
+		log.info(jedisCluster.set("a", "aaa"));
+		log.info("" + jedisCluster.expire("a", 300));
+		
+		
+//		while (jedisCluster.ttl("a") > 0) {
+//			log.info("### " + jedisCluster.get("a"));
+//			try {
+//				Thread.sleep(2000L);
+//			} 
+//			catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		
 		for (int i=1; i<20; i++) {
 			String key = "a" + i;
 			String value = "aaa#" + UUID.randomUUID().toString();
 			
-			log.info(jedisCluster.set(key, value));
+//			log.info(jedisCluster.set(key, value));
+			log.info(jedisCluster.setex(key, 30, value));
 		}
 		
 //		Set<String> set = keys2(jedisCluster, "a*");
@@ -49,7 +67,7 @@ public class App {
 //			log.info(key + ", " + jedisCluster.get(key));
 //		}
 		
-		log.info(jedisCluster.get("a2"));
+//		log.info(jedisCluster.get("a2"));
 		
 //		ShardedJedisPool pool = (ShardedJedisPool) context.getBean("shardedJedisPool");
 //		
@@ -61,6 +79,7 @@ public class App {
 //			
 //			
 //		}
+		
 		
 	}
 	
