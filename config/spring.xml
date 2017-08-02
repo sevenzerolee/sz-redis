@@ -57,6 +57,14 @@
                     <constructor-arg type="String" value="${redis.host6}"/>
                     <constructor-arg type="int" value="${redis.port6}"/>
                 </bean>
+                <bean class="redis.clients.jedis.HostAndPort">
+                    <constructor-arg type="String" value="${redis.host7}"/>
+                    <constructor-arg type="int" value="${redis.port7}"/>
+                </bean>
+                <bean class="redis.clients.jedis.HostAndPort">
+                    <constructor-arg type="String" value="${redis.host8}"/>
+                    <constructor-arg type="int" value="${redis.port8}"/>
+                </bean>
             </set>
         </constructor-arg>
         

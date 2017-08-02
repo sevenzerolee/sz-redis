@@ -1,6 +1,9 @@
 package sz_redis.sz_redis;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,6 +47,8 @@ public class App {
 		log.info("" + jedisCluster.expire("a", 300));
 		
 		
+		
+		
 //		while (jedisCluster.ttl("a") > 0) {
 //			log.info("### " + jedisCluster.get("a"));
 //			try {
@@ -53,6 +58,13 @@ public class App {
 //				e.printStackTrace();
 //			}
 //		}
+		
+		List<Obj> list = new ArrayList<Obj>();
+		for (int i=1; i<10; i++) {
+			list.add(new Obj("Name", 10+i, new Date()));
+		}
+		
+		
 		
 		for (int i=1; i<20; i++) {
 			String key = "a" + i;
@@ -146,6 +158,44 @@ public class App {
 		}
 		log.info("Keys gotten!");
 		return keys;
+	}
+	
+}
+
+class Obj {
+	
+	private String name;
+	private int age;
+	private Date date;
+	
+	public Obj(String name, int age, Date date) {
+		this.name = name;
+		this.age = age;
+		this.date = date;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
 }
