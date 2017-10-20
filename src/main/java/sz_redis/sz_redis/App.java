@@ -28,7 +28,7 @@ public class App {
 	public static void main(String[] args) {
 		log.info("Hello World!");
 		
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring_dev.xml");
 //		ApplicationContext context = new ClassPathXmlApplicationContext("spring_new.xml");
 		
 //		ShardedJedisPool redis = (ShardedJedisPool) context.getBean("shardedJedisPool");
@@ -66,12 +66,12 @@ public class App {
 		
 		
 		
-		for (int i=1; i<20; i++) {
+		for (int i=1; i<2000; i++) {
 			String key = "a" + i;
 			String value = "aaa#" + UUID.randomUUID().toString();
 			
 //			log.info(jedisCluster.set(key, value));
-			log.info(jedisCluster.setex(key, 30, value));
+			log.info(jedisCluster.setex(key, 300, value));
 		}
 		
 //		Set<String> set = keys2(jedisCluster, "a*");
