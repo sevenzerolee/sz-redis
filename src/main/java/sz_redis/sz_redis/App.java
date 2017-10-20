@@ -28,6 +28,7 @@ public class App {
 	public static void main(String[] args) {
 		log.info("Hello World!");
 		
+//		ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring_dev.xml");
 //		ApplicationContext context = new ClassPathXmlApplicationContext("spring_new.xml");
 		
