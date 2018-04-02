@@ -5,15 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.springframework.context.ApplicationContext;
@@ -27,11 +22,12 @@ import redis.clients.jedis.JedisPool;
  * Hello world!
  * 
  */
-public class App {
+public class AppTest {
 	
-	static final Logger log = Logger.getLogger(App.class.getSimpleName());
+	static final Logger log = Logger.getLogger(AppTest.class.getSimpleName());
 	
 	public static void main(String[] args) {
+		
 		log.info("Hello World!");
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
@@ -49,75 +45,49 @@ public class App {
 //		log.info(jedisCluster.get("a"));
 		
 		
-		log.info(jedisCluster.set("a", "aaa"));
-		log.info("" + jedisCluster.expire("a", 300));
 		
+		Set<String> set = keysAll(jedisCluster, "*b*");
+		for (String s : set) {
+			System.out.println(s);
+		}
 		
+		for (String s : set) {
+			long result = jedisCluster.del(s);
+			System.out.println("### " + result);
+		}
 		
-		
-//		while (jedisCluster.ttl("a") > 0) {
-//			log.info("### " + jedisCluster.get("a"));
-//			try {
-//				Thread.sleep(2000L);
-//			} 
-//			catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		}
-		
-		List<Obj> list = new ArrayList<Obj>();
-		for (int i=1; i<10; i++) {
-			list.add(new Obj("Name", 10+i, new Date()));
+		Set<String> set2 = keysAll(jedisCluster, "*b*");
+		for (String s : set2) {
+			System.out.println(s);
 		}
 		
 		
 		
-		for (int i=1; i<200; i++) {
-			String key = "a" + i;
-			String value = "aaa#" + UUID.randomUUID().toString();
-			
-			if (i % 5 == 0) {
-				key = "b" + i;
+	}
+	
+	public static Set<String> keysAll(JedisCluster jedisCluster, String pattern) {
+		Set<String> keys = new HashSet<String>();
+		if (null != pattern) {
+			Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
+			for (String k : clusterNodes.keySet()) {
+				JedisPool jp = clusterNodes.get(k);
+				Jedis connection = jp.getResource();
+				try {
+					keys.addAll(connection.keys(pattern));
+				} 
+				catch (Exception e) {
+					e.printStackTrace();
+				} 
+				finally {
+					// 用完一定要close这个链接！！！
+					if (null != connection) {
+						connection.close();
+					}
+				}
 			}
-			
-//			log.info(jedisCluster.set(key, value));
-			log.info(jedisCluster.setex(key, 300, value));
 		}
 		
-//		Set<String> set = keys2(jedisCluster, "a*");
-//		for (String key : set) {
-//			log.info(key + ", " + jedisCluster.get(key));
-//		}
-		
-//		log.info(jedisCluster.get("a2"));
-		
-//		ShardedJedisPool pool = (ShardedJedisPool) context.getBean("shardedJedisPool");
-//		
-//		for (int i=0; i<20; i++) {
-//			String key = "a" + i;
-//			String value = "aaa#" + UUID.randomUUID().toString();
-//			
-//			pool.getResource().set(key, value);
-//			
-//			
-//		}
-		
-		//存对象
-//        Perso?n p=new Person();  //peson类记得实现序列化接口 Serializable
-        Obj p = new Obj();
-        p.setAge(20);
-        p.setName("姚波");
-//        p.setId(1);
-        p.setDate(new Date());
-//        jedis.set("person".getBytes(), serialize(p));
-//        jedisCluster.set("obj".getBytes(), serialize(p));
-//        byte[] byt=jedis.get("person".getBytes());
-//        byte[] byt = jedisCluster.get("obj".getBytes());
-//        Object obj=unserizlize(byt);
-//        if(obj instanceof Obj){
-//            System.out.println(obj);
-//        }
-		
+		return keys;
 	}
 	
 	/**
@@ -221,47 +191,4 @@ public class App {
 	
 }
 
-class Obj implements Serializable{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8775341447794170330L;
-	
-	private String name;
-	private int age;
-	private Date date;
-	
-	public Obj() {}
-	
-	public Obj(String name, int age, Date date) {
-		this.name = name;
-		this.age = age;
-		this.date = date;
-	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	
-}
